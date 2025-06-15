@@ -3,7 +3,8 @@
 int main(int argc, char *argv[])
 {
     PIXEL **matrizpixeles;
-    uint8_t *vector=0, byte;
+    FILE *archivo;
+    uint8_t *vector=0;
     size_t filas, columnas;
     int i = 0,j=0, n=1;
     int extended_header = 0;
@@ -12,9 +13,7 @@ int main(int argc, char *argv[])
         printf("Error: Se deben pasar al menos un argumento.\n");
         return 1;
     }*/
-    uint8_t padding=0;
 
-    FILE *archivo, *nuevaimagen;
 
     archivo = fopen("unlam_359.bmp", "rb");
     if (!archivo)
@@ -52,58 +51,32 @@ int main(int argc, char *argv[])
     else
         exit(1);
 // verificar el tamaño del header por si tiene un header extendido y guardarlo.
-    if(ih.tamCabecera>39)
+    if(ih.tamCabecera>40)
     {
         vector=crearvector(ih.tamCabecera-40);
         extended_header=1;
-        fread(vector,sizeof(vector),1,archivo);
+        fread(vector,1,ih.tamCabecera-40,archivo);
 
     }
     matrizpixeles = crearMatriz(filas,columnas);
     llenarMatriz(matrizpixeles,filas,columnas,archivo);
+
+    /*if (n==1)
+        {
+            EscaladeGrises(matrizpixeles,filas,columnas);
+            CrearImagen(matrizpixeles,ih,fh,argv,vector);
+            n=0;
+        }
+    */
+    /*
     if (n==1)
         {
-
-            EscaladeGrises(matrizpixeles,filas,columnas);
-            nuevaimagen=fopen("escala_de_grises.bmp","wb");
-            if (!archivo)
-            {
-                perror("No se pudo abrir el archivo");
-                return EXIT_FAILURE;
-            }
-            fwrite(&fh,sizeof(BMPFileHeader),1,nuevaimagen);
-
-            fwrite(&ih,sizeof(BMPInfoHeader),1,nuevaimagen);
-
-            if(extended_header==1)
-            {
-                fwrite(vector,sizeof(vector),1,nuevaimagen);
-            }
-            for(i = 0 ; i < filas ; i++)
-            {
-                for(j = 0 ; j < columnas ; j++)
-                {
-                    byte=matrizpixeles[i][j].b;
-                    fwrite(&byte,1,1,nuevaimagen);
-
-                    byte=matrizpixeles[i][j].g;
-                    fwrite(&byte,1,1,nuevaimagen);
-
-                    byte=matrizpixeles[i][j].r;
-                    fwrite(&byte,1,1,nuevaimagen);
-
-
-                }
-                fwrite(padding,1,1,nuevaimagen);
-                fwrite(padding,1,1,nuevaimagen);
-                fwrite(padding,1,1,nuevaimagen);
-
-            }
-            printf("imagen creada");
-            fclose(nuevaimagen);
+            Negativo(matrizpixeles,filas,columnas);
+            CrearImagen(matrizpixeles,ih,fh,argv,vector);
             n=0;
-
         }
+    */
+
    /* for (int i = 1; i < 2; i++)
     {
         if (strcmp(argv[i], "--negativo") == 0)

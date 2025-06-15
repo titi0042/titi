@@ -42,7 +42,12 @@ PIXEL** crearMatriz( size_t filas, size_t columnas);
 void llenarMatriz(PIXEL **matriz, size_t filas, size_t columnas, FILE *foto);
 void mostrarMatriz(PIXEL **matriz, size_t filas, size_t columnas);
 uint8_t* crearvector( size_t ce);
+void CrearImagen(PIXEL **matriz,BMPInfoHeader ih,BMPFileHeader fh,char nombre_imagen,uint8_t* vecext);
+/////////////////////////////////////////
+void Negativo(PIXEL **matriz, size_t filas, size_t columnas);
 void EscaladeGrises(PIXEL **matriz, size_t filas, size_t columnas);
+
+
 
 
 
