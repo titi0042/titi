@@ -1,0 +1,14 @@
+# depslib dependency file v1.0
+1750025945 source:c:\users\user\desktop\nueva carpeta\funciones_grupo.c
+	"funciones_grupo.h"
+
+1750025238 c:\users\user\desktop\nueva carpeta\funciones_grupo.h
+	<stdio.h>
+	<stdlib.h>
+	<stdint.h>
+	<stdbool.h>
+	<string.h>
+
+1750026451 source:c:\users\user\desktop\nueva carpeta\main.c
+	"funciones_grupo.h"
+
