@@ -48,8 +48,8 @@ PIXEL** crearMatriz( size_t filas, size_t columnas)
 }
 void llenarMatriz(PIXEL **matriz, size_t filas, size_t columnas, FILE *foto)
 {
-    size_t i, j, padding, fila_bytes;
-    uint8_t bytes[3];
+    size_t i, j,k, padding, fila_bytes;
+    uint8_t bytes;
     fila_bytes = 3 * columnas;
     padding = (4 - (fila_bytes % 4)) % 4;
 
@@ -59,10 +59,11 @@ void llenarMatriz(PIXEL **matriz, size_t filas, size_t columnas, FILE *foto)
         {
             for(j = 0 ; j < columnas ; j++)
             {
-                fread(bytes,1,3,foto);
-                matriz[i][j].b = bytes[0];
-                matriz[i][j].g = bytes[1];
-                matriz[i][j].r = bytes[2];
+                for(k = 0 ; k < 3 ; k++)
+                {
+                fread(&bytes,1,1,foto);
+                matriz[i][j].bgr[k] = bytes;
+                }
 
             }
                 fseek(foto, padding, SEEK_CUR);
@@ -71,15 +72,16 @@ void llenarMatriz(PIXEL **matriz, size_t filas, size_t columnas, FILE *foto)
 }
 void mostrarMatriz(PIXEL **matriz, size_t filas, size_t columnas)
 {
-    size_t i, j;
+    size_t i, j, k;
 
     for(i = 0 ; i < filas ; i++)
     {
         for(j = 0 ; j < columnas ; j++)
         {
-            printf("%02x\t",matriz[i][j].b);
-            printf("%02x\t",matriz[i][j].g);
-            printf("%02x\t",matriz[i][j].r);
+            for(k = 0 ; k < 3 ; k++)
+            {
+            printf("%02x\t",matriz[i][j].bgr[k]);
+            }
         }
         printf("\n");
     }
@@ -87,16 +89,12 @@ void mostrarMatriz(PIXEL **matriz, size_t filas, size_t columnas)
 //////////////////////////////////////////CREAR IMAGEN//////////////////////////////////////////////////////
 void CrearImagen(PIXEL **matriz,BMPInfoHeader ih,BMPFileHeader fh,char nombre_imagen,uint8_t* vecext)
 {
-    uint8_t byte;
-    size_t i,j,k;
-    PIXEL padding;
+    uint8_t byte,cero=0;
+    size_t i,j,k,padding;
     FILE *nuevaimagen;
-    padding.b=0;
-    padding.g=0;
-    padding.r=0;
-    k = (3 * ih.ancho) % 4;
+    padding = (4-(3*ih.ancho)% 4);
 
-    nuevaimagen=fopen("escala_de_grises.bmp","wb");
+    nuevaimagen=fopen("reducir_cont.bmp","wb");
     if (!nuevaimagen)
     {
         perror("No se pudo abrir el archivo");
@@ -115,19 +113,16 @@ void CrearImagen(PIXEL **matriz,BMPInfoHeader ih,BMPFileHeader fh,char nombre_im
     {
         for(j = 0 ; j < ih.ancho ; j++)
         {
-            byte=matriz[i][j].b;
+            for(k = 0 ; k < 3 ; k++)
+            {
+            byte=matriz[i][j].bgr[k];
             fwrite(&byte,1,1,nuevaimagen);
-
-            byte=matriz[i][j].g;
-            fwrite(&byte,1,1,nuevaimagen);
-
-            byte=matriz[i][j].r;
-            fwrite(&byte,1,1,nuevaimagen);
-
+            }
         }
-
-        fwrite(&padding,sizeof(PIXEL),1,nuevaimagen);
-
+        for(k=0;k<padding;k++)
+        {
+          fwrite(&cero,sizeof(cero),1,nuevaimagen);
+        }
     }
     printf("imagen creada");
     fclose(nuevaimagen);
@@ -135,15 +130,16 @@ void CrearImagen(PIXEL **matriz,BMPInfoHeader ih,BMPFileHeader fh,char nombre_im
 /////////////////////////////////////////NEGATIVO//////////////////////////////////////////////////////////////////////
 void Negativo(PIXEL **matriz, size_t filas, size_t columnas)
 {
-    size_t i, j;
+    size_t i, j, k;
 
     for(i = 0 ; i < filas ; i++)
     {
         for(j = 0 ; j < columnas ; j++)
         {
-            matriz[i][j].b=255-matriz[i][j].b;
-            matriz[i][j].g=255-matriz[i][j].g;
-            matriz[i][j].r=255-matriz[i][j].r;
+            for(k = 0 ; k < 3 ; k++)
+            {
+            matriz[i][j].bgr[k]=255-matriz[i][j].bgr[k];
+            }
         }
 
     }
@@ -152,19 +148,150 @@ void Negativo(PIXEL **matriz, size_t filas, size_t columnas)
 //////////////////////////////////////////ESCALA DE GRISES///////////////////////////////////////////////
 void EscaladeGrises(PIXEL **matriz, size_t filas, size_t columnas)
 {
-    size_t i, j;
-    uint8_t aux;
+    size_t i, j, k;
+    uint8_t aux=0;
 
     for(i = 0 ; i < filas ; i++)
     {
         for(j = 0 ; j < columnas ; j++)
         {
-            aux = (matriz[i][j].b+matriz[i][j].g+matriz[i][j].r)/3;
-            matriz[i][j].b=aux;
-            matriz[i][j].g=aux;
-            matriz[i][j].r=aux;
+            for(k = 0 ; k < 3 ; k++)
+            {
+                aux +=matriz[i][j].bgr[k];
+            }
+            aux=aux/3;
+            for(k = 0 ; k < 3 ; k++)
+            {
+                matriz[i][j].bgr[k];
+            }
         }
 
     }
+
+}
+///////////////////////////////////////ESPEJAR HORIZONTAL////////////////////////////////////////////////
+void EspejarHorizontal(PIXEL **matriz, size_t fin_fi, size_t columnas)
+{
+    size_t i, j, k, fin_col;
+    PIXEL aux;
+
+    for(i = 0 ; i <fin_fi ; i++)
+    {
+        fin_col=columnas-1;
+        for(j = 0 ; j < fin_col ; j++)
+        {
+            for(k = 0 ; k < 3 ; k++)
+            {
+                aux.bgr[k]=matriz[i][j].bgr[k];
+
+                matriz[i][j].bgr[k]=matriz[i][fin_col].bgr[k];
+
+                matriz[i][fin_col].bgr[k]=aux.bgr[k];
+            }
+            fin_col--;
+
+        }
+
+    }
+
+}
+//////////////////////////////////ESPEJADO VERTICAL//////////////////////////////////////////////////
+void EspejarVertical(PIXEL **matriz, size_t filas, size_t columnas)
+{
+    size_t i, j, k, fin_fi;
+    PIXEL aux;
+
+    for(i = 0 ; i <columnas ; i++)
+    {
+        fin_fi=filas-1;
+        for(j = 0 ; j < fin_fi ; j++)
+        {
+            for(k = 0 ; k < 3 ; k++)
+            {
+                aux.bgr[k]=matriz[j][i].bgr[k];
+
+                matriz[j][i].bgr[k]=matriz[fin_fi][i].bgr[k];
+
+                matriz[fin_fi][i].bgr[k]=aux.bgr[k];
+            }
+        fin_fi--;
+
+        }
+    }
+}
+/////////////////////////////////AUMENTAR CONTRASTE/////////////////////////////////
+void AumentarContraste(PIXEL **matriz, size_t filas, size_t columnas,float factor)
+{
+
+    size_t i, j, k;
+    float nuevo_valor=0;
+    factor=factor/100.0+1.0;
+    for(i = 0 ; i < filas ; i++)
+    {
+        for(j = 0 ; j < columnas ; j++)
+        {
+
+            for(k = 0 ; k < 3 ; k++)
+            {
+                nuevo_valor =128.0+(factor*((float)matriz[i][j].bgr[k]-128.0));
+                if (nuevo_valor <= 0)
+                {
+                    nuevo_valor = 0;
+                }
+                if (nuevo_valor > 255)
+                {
+                nuevo_valor = 255;
+                }
+                matriz[i][j].bgr[k] = nuevo_valor;
+            }
+
+        }
+
+    }
+}
+/////////////////////////////REDUCIR CONTRASTE////////////////////////////////////////
+void ReducirContraste(PIXEL **matriz, size_t filas, size_t columnas,float factor)
+{
+    printf("%f",factor);
+    size_t i, j, k;
+    float nuevo_valor=0;
+    factor =factor/100.0;
+    printf("%d",matriz[0][0].bgr[0] );
+    for(i = 0 ; i < filas ; i++)
+    {
+        for(j = 0 ; j < columnas ; j++)
+        {
+
+            for(k = 0 ; k < 3 ; k++)
+            {
+                nuevo_valor =128.0+(1.0-factor)*((float)matriz[i][j].bgr[k]-128.0);
+                if (nuevo_valor <= 0)
+                {
+                    nuevo_valor = 0;
+                }
+                if (nuevo_valor > 255)
+                {
+                nuevo_valor = 255;
+                }
+                matriz[i][j].bgr[k] = nuevo_valor;
+            }
+
+        }
+
+    }
+    printf("%d",matriz[0][0].bgr[0] );
+}
+////////////////////////////////////////ACHICAR////////////////////////////////////////////////
+void AchicarMatriz(PIXEL **matriz, size_t filas, size_t columnas, float factor)
+{
+    PIXEL **matriz_reducida;
+    int ancho_redu, alto_redu;
+    factor=factor/100
+    ancho_redu=columnas*factor;
+    alto_redu=filas*factor;
+    matriz_reducida=crearMatriz(alto_redu,ancho_redu);
+
+
+
 
 }

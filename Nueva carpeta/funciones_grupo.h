@@ -30,9 +30,7 @@ typedef struct {
 } BMPInfoHeader;
 
 typedef struct {
- uint8_t b;
- uint8_t g;
- uint8_t r;
+ uint8_t bgr[3];
 } PIXEL;
 
 #pragma pack(pop)
@@ -46,9 +44,11 @@ void CrearImagen(PIXEL **matriz,BMPInfoHeader ih,BMPFileHeader fh,char nombre_im
 /////////////////////////////////////////
 void Negativo(PIXEL **matriz, size_t filas, size_t columnas);
 void EscaladeGrises(PIXEL **matriz, size_t filas, size_t columnas);
-
-
-
+void EspejarHorizontal(PIXEL **matriz, size_t fin_fi, size_t fin_col);
+void EspejarVertical(PIXEL **matriz, size_t filas, size_t columnas);
+void AumentarContraste(PIXEL **matriz, size_t filas, size_t columnas,float factor);
+void ReducirContraste(PIXEL **matriz, size_t filas, size_t columnas,float factor);
+void AchicarMatriz(PIXEL **matriz, size_t filas, size_t columnas, float factor);
 
 
 #endif // FUNCIONES_GRUPO_H_INCLUDED

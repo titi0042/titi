@@ -6,6 +6,7 @@ int main(int argc, char *argv[])
     FILE *archivo;
     uint8_t *vector=0;
     size_t filas, columnas;
+    float factor=70.0f;
     int i = 0,j=0, n=1;
     int extended_header = 0;
 
@@ -29,6 +30,7 @@ int main(int argc, char *argv[])
     fread(&ih, sizeof(BMPInfoHeader), 1, archivo);
 
     // Validar que sea un BMP de 24 bits
+
     if (fh.tipo != 0x4D42 || ih.bpp != 24)
     {
         fprintf(stderr, "Archivo no es un BMP de 24 bits.\n");
@@ -61,13 +63,6 @@ int main(int argc, char *argv[])
     matrizpixeles = crearMatriz(filas,columnas);
     llenarMatriz(matrizpixeles,filas,columnas,archivo);
 
-    /*if (n==1)
-        {
-            EscaladeGrises(matrizpixeles,filas,columnas);
-            CrearImagen(matrizpixeles,ih,fh,argv,vector);
-            n=0;
-        }
-    */
     /*
     if (n==1)
         {
@@ -75,7 +70,50 @@ int main(int argc, char *argv[])
             CrearImagen(matrizpixeles,ih,fh,argv,vector);
             n=0;
         }
+
+    if (n==1)
+        {
+            EscaladeGrises(matrizpixeles,filas,columnas);
+            CrearImagen(matrizpixeles,ih,fh,argv,vector);
+            n=0;
+        }
+
+    if (n==1)
+        {
+            EspejarHorizontal(matrizpixeles,filas,columnas);
+            CrearImagen(matrizpixeles,ih,fh,argv,vector);
+            n=0;
+        }
+
+
+    if (n==1)
+        {
+            EspejarVertical(matrizpixeles,filas,columnas);
+            CrearImagen(matrizpixeles,ih,fh,argv,vector);
+            n=0;
+        }
+
+    if (n==1)
+        {
+            AumentarContraste(matrizpixeles,filas,columnas,50);
+            CrearImagen(matrizpixeles,ih,fh,argv,vector);
+            n=0;
+        }
+
+    if (n==1)
+        {
+            ReducirContraste(matrizpixeles,filas,columnas,factor);
+            CrearImagen(matrizpixeles,ih,fh,argv,vector);
+            n=0;
+        }
     */
+    if (n==1)
+        {
+
+            AchicarMatriz(matrizpixeles,filas,columnas,factor);
+            CrearImagen(matrizpixeles,ih,fh,argv,vector);
+            n=0;
+        }
 
    /* for (int i = 1; i < 2; i++)
     {
