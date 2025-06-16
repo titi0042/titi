@@ -48,7 +48,8 @@ void EspejarHorizontal(PIXEL **matriz, size_t fin_fi, size_t fin_col);
 void EspejarVertical(PIXEL **matriz, size_t filas, size_t columnas);
 void AumentarContraste(PIXEL **matriz, size_t filas, size_t columnas,float factor);
 void ReducirContraste(PIXEL **matriz, size_t filas, size_t columnas,float factor);
-void AchicarMatriz(PIXEL **matriz, size_t filas, size_t columnas, float factor);
-
+PIXEL** AchicarMatriz(PIXEL **matriz, size_t filas, size_t columnas, float factor);
+PIXEL** RotarDerecha(PIXEL **matriz,size_t filas, size_t columnas);
+PIXEL** RotarIzquierda(PIXEL **matriz,size_t filas, size_t columnas);
 
 #endif // FUNCIONES_GRUPO_H_INCLUDED

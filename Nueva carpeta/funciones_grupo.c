@@ -92,9 +92,9 @@ void CrearImagen(PIXEL **matriz,BMPInfoHeader ih,BMPFileHeader fh,char nombre_im
     uint8_t byte,cero=0;
     size_t i,j,k,padding;
     FILE *nuevaimagen;
-    padding = (4-(3*ih.ancho)% 4);
+    padding = (4-(3*ih.ancho)% 4)%4;
 
-    nuevaimagen=fopen("reducir_cont.bmp","wb");
+    nuevaimagen=fopen("rotar_dere.bmp","wb");
     if (!nuevaimagen)
     {
         perror("No se pudo abrir el archivo");
@@ -282,16 +282,73 @@ void ReducirContraste(PIXEL **matriz, size_t filas, size_t columnas,float factor
     printf("%d",matriz[0][0].bgr[0] );
 }
 ////////////////////////////////////////ACHICAR////////////////////////////////////////////////
-void AchicarMatriz(PIXEL **matriz, size_t filas, size_t columnas, float factor)
+PIXEL** AchicarMatriz(PIXEL **matriz, size_t filas, size_t columnas, float factor)
 {
     PIXEL **matriz_reducida;
-    int ancho_redu, alto_redu;
-    factor=factor/100
-    ancho_redu=columnas*factor;
-    alto_redu=filas*factor;
+    int ancho_redu, alto_redu, x, y, x1, y1,i,j,k;
+    float escala_x, escala_y;
+    ancho_redu=columnas*(1-factor);
+    alto_redu=filas*(1-factor);
+    printf("%d",alto_redu);
     matriz_reducida=crearMatriz(alto_redu,ancho_redu);
+    escala_x=columnas/ancho_redu;
+    escala_y=filas/alto_redu;
+    for(i = 0 ; i < alto_redu ; i++)
+    {
+        y = (int)escala_y* i;
+        y1 = (y+1<columnas-1)?y+1:filas-1;
+        for(j = 0 ; j < ancho_redu ; j++)
+        {
+            x = (int)escala_x* j;
+            x1 = (x+1<columnas-1)?x+1:columnas-1;
+
+            for(k = 0 ; k < 3 ; k++)
+            {
+
+                matriz_reducida[i][j].bgr[k]=(matriz[y][x].bgr[k] + matriz[y][x1].bgr[k] + matriz[y1][x].bgr[k] + matriz[y1][x1].bgr[k]) / 4;
+
+            }
+
+        }
+
+    }
 
 
+    return matriz_reducida;
+}
+////////////////////////////////ROTAR DERECHA////////////////////////////////
+PIXEL** RotarDerecha(PIXEL **matriz,size_t filas, size_t columnas)
+{
 
+        int i, j;
+        PIXEL** nueva_matriz = crearMatriz(columnas, filas);
+
+        for (int i = 0; i < filas; i++)
+        {
+            for (int j = 0; j < columnas; j++)
+            {
+            nueva_matriz[j][i] = matriz[i][j];
+            }
+        }
+
+        return nueva_matriz;
+
+}
+////////////////////////////////ROTAR IZQUIERDA////////////////////////////////
+PIXEL** RotarIzquierda(PIXEL **matriz,size_t filas, size_t columnas)
+{
+
+        int i, j;
+        PIXEL** nueva_matriz = crearMatriz(columnas, filas);
+
+        for (int i = 0; i < filas; i++)
+        {
+            for (int j = 0; j < columnas; j++)
+            {
+            nueva_matriz[j][filas - i - 1] = matriz[i][j];
+            }
+        }
+
+        return nueva_matriz;
 
 }

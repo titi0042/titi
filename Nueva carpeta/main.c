@@ -2,11 +2,11 @@
 
 int main(int argc, char *argv[])
 {
-    PIXEL **matrizpixeles;
+    PIXEL **matrizpixeles, **matriz_aux;
     FILE *archivo;
     uint8_t *vector=0;
     size_t filas, columnas;
-    float factor=70.0f;
+    float factor=50.0f;
     int i = 0,j=0, n=1;
     int extended_header = 0;
 
@@ -23,8 +23,8 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    BMPFileHeader fh;
-    BMPInfoHeader ih;
+    BMPFileHeader fh,fh_r;
+    BMPInfoHeader ih,ih_r;
 
     fread(&fh, sizeof(BMPFileHeader), 1, archivo);
     fread(&ih, sizeof(BMPInfoHeader), 1, archivo);
@@ -106,12 +106,28 @@ int main(int argc, char *argv[])
             CrearImagen(matrizpixeles,ih,fh,argv,vector);
             n=0;
         }
+
+    if (n==1)
+        {
+            factor=factor/100.0;
+            matriz_aux=AchicarMatriz(matrizpixeles,filas,columnas,factor);
+            fh_r=fh;
+            ih_r=ih;
+            fh_r.tamArchivo= fh.tamArchivo*(1-factor);
+            ih_r.alto= ih.alto*(1-factor);
+            ih_r.ancho= ih.ancho*(1-factor);
+            CrearImagen(matriz_aux,ih_r,fh_r,argv,vector);
+            LiberarMatriz(matriz_aux,ih_r.alto);
+            n=0;
+        }
     */
     if (n==1)
         {
-
-            AchicarMatriz(matrizpixeles,filas,columnas,factor);
-            CrearImagen(matrizpixeles,ih,fh,argv,vector);
+            matriz_aux=RotarDerecha(matrizpixeles,filas,columnas);
+            ih_r=ih;
+            ih_r.alto=ih.ancho;
+            ih_r.ancho=ih.alto;
+            CrearImagen(matriz_aux,ih_r,fh,argv,vector);
             n=0;
         }
 
