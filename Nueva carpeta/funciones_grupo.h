@@ -30,26 +30,40 @@ typedef struct {
 } BMPInfoHeader;
 
 typedef struct {
- uint8_t bgr[3];
+    uint8_t bgr[3];
 } PIXEL;
+
+typedef struct{
+    BMPFileHeader cab_file;
+    BMPInfoHeader cab_info;
+    uint8_t *vect;
+    PIXEL **pixeles;
+}IMAGEN;
 
 #pragma pack(pop)
 
-void liberarMatriz(PIXEL** matriz, size_t filas);
-PIXEL** crearMatriz( size_t filas, size_t columnas);
-void llenarMatriz(PIXEL **matriz, size_t filas, size_t columnas, FILE *foto);
-void mostrarMatriz(PIXEL **matriz, size_t filas, size_t columnas);
+
+void liberarMatriz(PIXEL **matriz, size_t filas);
+PIXEL** crearMatriz(size_t alto, size_t ancho);
+void llenarMatriz(IMAGEN bit_map, FILE *foto);
+void mostrarMatriz(IMAGEN bit_map);
 uint8_t* crearvector( size_t ce);
-void CrearImagen(PIXEL **matriz,BMPInfoHeader ih,BMPFileHeader fh,char nombre_imagen,uint8_t* vecext);
+void CrearImagen(IMAGEN bit_map,char nombre[50]);
 /////////////////////////////////////////
-void Negativo(PIXEL **matriz, size_t filas, size_t columnas);
-void EscaladeGrises(PIXEL **matriz, size_t filas, size_t columnas);
-void EspejarHorizontal(PIXEL **matriz, size_t fin_fi, size_t fin_col);
-void EspejarVertical(PIXEL **matriz, size_t filas, size_t columnas);
-void AumentarContraste(PIXEL **matriz, size_t filas, size_t columnas,float factor);
-void ReducirContraste(PIXEL **matriz, size_t filas, size_t columnas,float factor);
-PIXEL** AchicarMatriz(PIXEL **matriz, size_t filas, size_t columnas, float factor);
-PIXEL** RotarDerecha(PIXEL **matriz,size_t filas, size_t columnas);
-PIXEL** RotarIzquierda(PIXEL **matriz,size_t filas, size_t columnas);
+void Negativo(IMAGEN bit_map,char nombre[50]);
+void EscaladeGrises(IMAGEN bit_map,char nombre[50]);
+void EspejarHorizontal(IMAGEN bit_map,char nombre[50]);
+void EspejarVertical(IMAGEN bit_map,char nombre[50]);
+void AumentarContraste(IMAGEN bit_map,char nombre[50],float porcentaje);
+void ReducirContraste(IMAGEN bit_map,char nombre[50],float porcentaje);
+void TonalidadAzul(IMAGEN bit_map,char nombre[50],float porcentaje);
+void TonalidadRoja(IMAGEN bit_map,char nombre[50],float porcentaje);
+void TonalidadVerde(IMAGEN bit_map,char nombre[50],float porcentaje);
+void recortarImagen(IMAGEN bit_map, char nombre[50], float porcentaje);
+void AchicarImagen(IMAGEN bit_map,char nombre[50], float factor);
+void RotarDerecha(IMAGEN bit_map, char nombre[50]);
+void RotarIzquierda(IMAGEN bit_map, char nombre[50]);
+void ConcatenarHorizontal(IMAGEN bit_map, IMAGEN bit_map_2, char nombre[40]);
+void ConcatenarVertical(IMAGEN bit_map, IMAGEN bit_map_2, char nombre[40]);
 
 #endif // FUNCIONES_GRUPO_H_INCLUDED

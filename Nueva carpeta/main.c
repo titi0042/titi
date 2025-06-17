@@ -2,10 +2,12 @@
 
 int main(int argc, char *argv[])
 {
+    IMAGEN foto, foto2;
     PIXEL **matrizpixeles, **matriz_aux;
-    FILE *archivo;
-    uint8_t *vector=0;
-    size_t filas, columnas;
+    FILE *archivo, *archivo1;
+    uint8_t *vector=0, *vector1=0;
+    size_t filas, columnas, filas1, columnas1;
+    char nombre[50] = "tu_hermana_parada.bmp";
     float factor=50.0f;
     int i = 0,j=0, n=1;
     int extended_header = 0;
@@ -23,115 +25,174 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    BMPFileHeader fh,fh_r;
-    BMPInfoHeader ih,ih_r;
 
-    fread(&fh, sizeof(BMPFileHeader), 1, archivo);
-    fread(&ih, sizeof(BMPInfoHeader), 1, archivo);
+
+
+
+    fread(&foto.cab_file, sizeof(BMPFileHeader), 1, archivo);
+    fread(&foto.cab_info, sizeof(BMPInfoHeader), 1, archivo);
+
+
 
     // Validar que sea un BMP de 24 bits
 
-    if (fh.tipo != 0x4D42 || ih.bpp != 24)
+    if (foto.cab_file.tipo != 0x4D42 || foto.cab_info.bpp != 24)
     {
         fprintf(stderr, "Archivo no es un BMP de 24 bits.\n");
         fclose(archivo);
         return EXIT_FAILURE;
     }
 
-    printf("Imagen: %dx%d, %d bits por pixel\n", ih.ancho, ih.alto, ih.bpp);
+    printf("Imagen: %dx%d, %d bits por pixel\n", foto.cab_info.ancho, foto.cab_info.alto, foto.cab_info.bpp);
 // calculo si es negativo el alto y ancho
-    if(ih.alto>0)
+    if(foto.cab_info.alto>0)
     {
-        filas=ih.alto;
+        filas=foto.cab_info.alto;
     }
     else
     {
-      filas= -ih.alto;
+      filas= -foto.cab_info.alto;
     }
-    if(ih.ancho>0)
-        columnas=ih.ancho;
+    if(foto.cab_info.ancho>0)
+        columnas=foto.cab_info.ancho;
     else
         exit(1);
 // verificar el tamaño del header por si tiene un header extendido y guardarlo.
-    if(ih.tamCabecera>40)
+    if(foto.cab_info.tamCabecera>40)
     {
-        vector=crearvector(ih.tamCabecera-40);
+        vector=crearvector(foto.cab_info.tamCabecera-40);
         extended_header=1;
-        fread(vector,1,ih.tamCabecera-40,archivo);
+        fread(vector,1,foto.cab_info.tamCabecera-40,archivo);
+        foto.vect=vector;
+
 
     }
-    matrizpixeles = crearMatriz(filas,columnas);
-    llenarMatriz(matrizpixeles,filas,columnas,archivo);
+    foto.pixeles=crearMatriz(filas,columnas);
 
-    /*
+    llenarMatriz(foto,archivo);
+
+
+    /////////////////////////////FOTO 2/////////////////////
+    archivo1 = fopen("unlam_1.bmp", "rb");
+    if (!archivo1)
+    {
+        perror("No se pudo abrir el archivo");
+        return EXIT_FAILURE;
+    }
+
+    fread(&foto2.cab_file, sizeof(BMPFileHeader), 1, archivo1);
+    fread(&foto2.cab_info, sizeof(BMPInfoHeader), 1, archivo1);
+
+    if (foto2.cab_file.tipo != 0x4D42 || foto2.cab_info.bpp != 24)
+    {
+        fprintf(stderr, "Archivo no es un BMP de 24 bits.\n");
+        fclose(archivo1);
+        return EXIT_FAILURE;
+    }
+
+    printf("Imagen: %dx%d, %d bits por pixel\n", foto2.cab_info.ancho, foto2.cab_info.alto, foto2.cab_info.bpp);
+// calculo si es negativo el alto y ancho
+    if(foto2.cab_info.alto>0)
+    {
+        filas1=foto2.cab_info.alto;
+    }
+    else
+    {
+      filas1= -foto2.cab_info.alto;
+    }
+    if(foto2.cab_info.ancho>0)
+        columnas1=foto2.cab_info.ancho;
+    else
+        exit(1);
+// verificar el tamaño del header por si tiene un header extendido y guardarlo.
+    if(foto2.cab_info.tamCabecera>40)
+    {
+        vector1=crearvector(foto2.cab_info.tamCabecera-40);
+        extended_header=1;
+        fread(vector1,1,foto2.cab_info.tamCabecera-40,archivo1);
+        foto2.vect=vector1;
+
+
+    }
+    foto2.pixeles=crearMatriz(filas1,columnas1);
+
+    llenarMatriz(foto2,archivo1);
+
+    //////////////////////////////////////////////
+
+
+
+/*
     if (n==1)
         {
-            Negativo(matrizpixeles,filas,columnas);
-            CrearImagen(matrizpixeles,ih,fh,argv,vector);
+
+            Negativo(foto,nombre);
+            n=0;
+        }
+
+
+    if (n==1)
+        {
+            EscaladeGrises(foto,nombre);
             n=0;
         }
 
     if (n==1)
         {
-            EscaladeGrises(matrizpixeles,filas,columnas);
-            CrearImagen(matrizpixeles,ih,fh,argv,vector);
-            n=0;
-        }
+            EspejarHorizontal(foto,nombre);
 
-    if (n==1)
-        {
-            EspejarHorizontal(matrizpixeles,filas,columnas);
-            CrearImagen(matrizpixeles,ih,fh,argv,vector);
             n=0;
         }
 
 
     if (n==1)
         {
-            EspejarVertical(matrizpixeles,filas,columnas);
-            CrearImagen(matrizpixeles,ih,fh,argv,vector);
+            EspejarVertical(foto,nombre);
             n=0;
         }
 
-    if (n==1)
-        {
-            AumentarContraste(matrizpixeles,filas,columnas,50);
-            CrearImagen(matrizpixeles,ih,fh,argv,vector);
-            n=0;
-        }
 
     if (n==1)
         {
-            ReducirContraste(matrizpixeles,filas,columnas,factor);
-            CrearImagen(matrizpixeles,ih,fh,argv,vector);
+            AumentarContraste(foto,nombre,factor);
+
             n=0;
         }
 
+
     if (n==1)
         {
-            factor=factor/100.0;
-            matriz_aux=AchicarMatriz(matrizpixeles,filas,columnas,factor);
-            fh_r=fh;
-            ih_r=ih;
-            fh_r.tamArchivo= fh.tamArchivo*(1-factor);
-            ih_r.alto= ih.alto*(1-factor);
-            ih_r.ancho= ih.ancho*(1-factor);
-            CrearImagen(matriz_aux,ih_r,fh_r,argv,vector);
-            LiberarMatriz(matriz_aux,ih_r.alto);
+            ReducirContraste(foto,nombre,factor);
             n=0;
         }
-    */
+
+
     if (n==1)
+        {
+
+            AchicarImagen(foto,nombre,factor);
+            n=0;
+        }
+        */
+        if (n==1)
+        {
+
+            ConcatenarHorizontal(foto,foto2,nombre);
+            n=0;
+        }
+/*
+    for(n=1)
         {
             matriz_aux=RotarDerecha(matrizpixeles,filas,columnas);
             ih_r=ih;
             ih_r.alto=ih.ancho;
             ih_r.ancho=ih.alto;
-            CrearImagen(matriz_aux,ih_r,fh,argv,vector);
+            CrearImagen(matriz_aux,ih_r,fh,argv[n],vector);
             n=0;
         }
+        */
 
-   /* for (int i = 1; i < 2; i++)
+   /* for (int i = 1; i < argc; i++)
     {
         if (strcmp(argv[i], "--negativo") == 0)
         {
@@ -197,7 +258,8 @@ int main(int argc, char *argv[])
 
     }*/
     //mostrarMatriz(matrizpixeles,1,columnas);
-    liberarMatriz(matrizpixeles, filas);
+    liberarMatriz(foto.pixeles,filas);
+    fclose(archivo1);
     fclose(archivo);
     liberarvector(vector);
     return EXIT_SUCCESS;
