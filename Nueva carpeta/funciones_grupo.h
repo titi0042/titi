@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <ctype.h>
 
 #pragma pack(push, 1)
 typedef struct {
@@ -44,11 +45,13 @@ typedef struct{
 
 
 void liberarMatriz(PIXEL **matriz, size_t filas);
+void liberarvector(uint8_t* vect);
 PIXEL** crearMatriz(size_t alto, size_t ancho);
 void llenarMatriz(IMAGEN bit_map, FILE *foto);
 void mostrarMatriz(IMAGEN bit_map);
 uint8_t* crearvector( size_t ce);
 void CrearImagen(IMAGEN bit_map,char nombre[50]);
+int extraerNumeroDesdeIgual( char *str, int *out);
 /////////////////////////////////////////
 void Negativo(IMAGEN bit_map,char nombre[50]);
 void EscaladeGrises(IMAGEN bit_map,char nombre[50]);
@@ -65,5 +68,6 @@ void RotarDerecha(IMAGEN bit_map, char nombre[50]);
 void RotarIzquierda(IMAGEN bit_map, char nombre[50]);
 void ConcatenarHorizontal(IMAGEN bit_map, IMAGEN bit_map_2, char nombre[40]);
 void ConcatenarVertical(IMAGEN bit_map, IMAGEN bit_map_2, char nombre[40]);
+void Comodin();///////////////////para mañana :V
 
 #endif // FUNCIONES_GRUPO_H_INCLUDED

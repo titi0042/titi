@@ -1,14 +1,15 @@
 # depslib dependency file v1.0
-1750140282 source:c:\users\user\desktop\nueva carpeta\funciones_grupo.c
+1750193619 source:c:\users\user\desktop\nueva carpeta\funciones_grupo.c
 	"funciones_grupo.h"
 
-1750136849 c:\users\user\desktop\nueva carpeta\funciones_grupo.h
+1750193619 c:\users\user\desktop\nueva carpeta\funciones_grupo.h
 	<stdio.h>
 	<stdlib.h>
 	<stdint.h>
 	<stdbool.h>
 	<string.h>
+	<ctype.h>
 
-1750137366 source:c:\users\user\desktop\nueva carpeta\main.c
+1750193530 source:c:\users\user\desktop\nueva carpeta\main.c
 	"funciones_grupo.h"
 

@@ -1,7 +1,7 @@
 #include "funciones_grupo.h"
-void liberarvector(uint8_t* vector)
+void liberarvector(uint8_t* vect)
 {
-    free(vector);
+    free(vect);
 }
 
 uint8_t* crearvector( size_t ce)
@@ -106,8 +106,8 @@ void CrearImagen(IMAGEN bit_map,char nombre[50])
     nuevaimagen=fopen(nombre,"wb");
     if (!nuevaimagen)
     {
-        perror("No se pudo abrir el archivo");
-        return EXIT_FAILURE;
+        perror("erro al crear imagen");
+        exit(1);
     }
     fwrite(&bit_map.cab_file,sizeof(BMPFileHeader),1,nuevaimagen);
 
@@ -137,6 +137,39 @@ void CrearImagen(IMAGEN bit_map,char nombre[50])
     }
     printf("imagen creada");
     fclose(nuevaimagen);
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int extraerNumeroDesdeIgual( char *str, int *out)
+{
+    char *igual = strchr(str, '=');
+    if (!igual || *(igual + 1) == '\0') {
+        return 0;  // No hay '=' o nada después de él
+    }
+
+    char *numero = igual + 1;
+    size_t len = strlen(numero);
+
+    if (len == 0 || len > 4) return 0; // Máximo: signo + 3 cifras
+
+    // Validación estricta: solo dígitos, con '-' solo al principio
+    if (numero[0] == '-') {
+        if (len == 1) return 0;  // Solo '-' no es válido
+        for (int i = 1; numero[i]; i++) {
+            if (!isdigit(numero[i])) return 0;
+        }
+    } else {
+        for (int i = 0; numero[i]; i++) {
+            if (!isdigit(numero[i])) return 0;
+        }
+    }
+
+    // Validar longitud de dígitos (sin contar el signo)
+    int cant_digitos = (numero[0] == '-') ? len - 1 : len;
+    if (cant_digitos > 3) return 0;
+
+    // Convertir
+    *out = atoi(numero);
+    return 1;
 }
 /////////////////////////////////////////NEGATIVO//////////////////////////////////////////////////////////////////////
 void Negativo(IMAGEN bit_map,char nombre[50])
@@ -433,7 +466,7 @@ void recortarImagen(IMAGEN bit_map, char nombre[50], float porcentaje)
 void AchicarImagen(IMAGEN bit_map,char nombre[50], float factor)
 {
     PIXEL **matriz_reducida;
-    int ancho_redu, alto_redu, x, y, x1, y1,i,j,k, filas,columnas;
+    int ancho_redu, alto_redu, x, y, x1, y1,i,j,k,columnas;
     size_t padding;
     float escala_x, escala_y;
     if (factor <= 0.0 || factor > 100.0)
@@ -441,14 +474,7 @@ void AchicarImagen(IMAGEN bit_map,char nombre[50], float factor)
 
     factor=factor/100.0;
 
-    if(bit_map.cab_info.alto>0)
-    {
-        filas=bit_map.cab_info.alto;
-    }
-    else
-    {
-        filas=-bit_map.cab_info.alto;
-    }
+    int filas = (bit_map.cab_info.alto > 0) ? bit_map.cab_info.alto : -bit_map.cab_info.alto;
     columnas=bit_map.cab_info.ancho;
     alto_redu=filas*(1-factor);
 
@@ -516,9 +542,9 @@ void RotarDerecha(IMAGEN bit_map,char nombre[50])
     }
 
 
-    for (int i = 0; i < filas; i++)
+    for (i = 0; i < filas; i++)
     {
-        for (int j = 0; j < columnas; j++)
+        for (j = 0; j < columnas; j++)
         {
             nueva_matriz[j][i] = bit_map.pixeles[i][j];
         }
@@ -547,9 +573,9 @@ void RotarIzquierda(IMAGEN bit_map, char nombre[50])
         exit(1);
     }
 
-    for (int i = 0; i < filas; i++)
+    for (i = 0; i < filas; i++)
     {
-        for (int j = 0; j < columnas; j++)
+        for (j = 0; j < columnas; j++)
         {
             nueva_matriz[j][filas - i - 1] = bit_map.pixeles[i][j];
         }
@@ -752,4 +778,8 @@ void ConcatenarVertical(IMAGEN bit_map, IMAGEN bit_map_2, char nombre[40])
     liberarMatriz(nuevaMatriz, nuevasFilas);
 }
 ///////////////////////////////////////////////////////////////////////////////
+void Comodin()
+{
+    printf("puta");
+}
 
